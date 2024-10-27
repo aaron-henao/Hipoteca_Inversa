@@ -6,8 +6,9 @@ sys.path.append("src")
 from CONTROLLER.Controlador_Usuarios import Controlador_Usuarios
 from MODEL.Usuario import Usuario
 
-# Se le da una bienvenida al usuario y se le muestra un menú con las opciones
+
 def Bienvenida():
+    # Se le da una bienvenida al usuario y se le muestra un menú con las opciones
     print("-------------------------------------------")
     print("    BIENVENIDO AL BANCO   ")
     print("¿Qué deseas hacer?")
@@ -37,22 +38,25 @@ def desiciones(opcion):
                 print("DATOS PERSONALES")
                 # Se obtienen los datos de entrada
                 cedula = int(input("Por favor ingrese su cedula: "))
-                edad = int(input("Por favor ingrese su edad actual: "))
-                estado_civil = input("Por favor ingrese su estado civil: ")
+                edad = int(input("Por favor ingrese su edad actual-->(entre 62 y 84 años): "))
+                estado_civil = input("Por favor ingrese su estado civil-->(casado, casada): ")
                 estado_civil = estado_civil.title()
                 #Condicional para saber si el usuario tiene conyugue
                 if estado_civil == "Casado" or estado_civil == "Casada":
                     #Si la condición anterior se cumple, se obtienen los datos del conyugue
                     edad_conyugue = int(input("Por favor ingrese la edad de su conyugue: "))
-                    sexo_conyugue = input("Por favor ingrese el genero de su conyugue: ")
+                    sexo_conyugue = input("Por favor ingrese el genero de su conyugue-->(hombre, mujer): ")
                 else:
                     #Si la condición anterior no se cumple, se definen los datos del conyugue como None
                     edad_conyugue = None
                     sexo_conyugue = None
+                
+                valor_inmueble = float(input("Por favor ingrese el valor del inmueble-->(debe ser un valor por encima del minimo): "))
+                tasa_interes = float(input("Por favor ingrese la tasa de interés (%): "))
                 print("-------------------------------------------------------------------------")
 
                 #Se crea el usuario en la base de datos
-                usuario = Usuario(cedula, edad, estado_civil, edad_conyugue, sexo_conyugue)
+                usuario = Usuario(cedula, edad, estado_civil, edad_conyugue, sexo_conyugue,valor_inmueble, tasa_interes)
                 Controlador_Usuarios.Insertar_Usuario(usuario)
                 # Se llama nuevamente al metodo de Bienvenida para reiniciar el proceso
                 Bienvenida()
@@ -89,4 +93,3 @@ else:
     Controlador_Usuarios.Crear_Tabla()
     # Se llama la funcion para dar inicio al programa
     Bienvenida()
-

@@ -77,7 +77,7 @@ class Valor_Inmueble_Exception(Exception):
 
     """
     def __init__(self):
-        super().__init__(f" No pueden haber campos vacios ")
+        super().__init__(f" No pueden haber campos vacios inmueble por debajo del minimo ")
 
 class Tasa_Exception(Exception):
     """ 
