@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Usuario</title>
+    <script>
+        function toggleConyugeFields() {
+            const estadoCivil = document.getElementById('estado_civil').value;
+            const conyugeFields = document.getElementById('conyuge_fields');
+
+            // Mostrar campos de cónyuge solo si el estado civil es "casado"
+            if (estadoCivil === 'married') {
+                conyugeFields.style.display = 'block';
+            } else {
+                conyugeFields.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Formulario de Usuario</h1>
+    <form method="POST" action="/user_form">
+        <label for="cedula">Cédula:</label>
+        <input type="number" id="cedula" name="cedula" required><br>
+
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" name="edad" required><br>
+
+        <label for="estado_civil">Estado Civil:</label>
+        <select id="estado_civil" name="estado_civil" onchange="toggleConyugeFields()" required>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="viudo">Divorced</option>
+        </select><br>
+
+        <!-- Sección de campos para el cónyuge, inicialmente oculta -->
+        <div id="conyuge_fields" style="display: none;">
+            <label for="edad_conyuge">Edad del Cónyuge:</label>
+            <input type="number" id="edad_conyuge" name="edad_conyuge"><br>
+
+            <label for="sexo_conyuge">Sexo del Cónyuge:</label>
+            <select id="sexo_conyuge" name="sexo_conyuge">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select><br>
+        </div>
+
+        <label for="valor_inmueble">Valor del Inmueble:</label>
+        <input type="number" id="valor_inmueble" name="valor_inmueble" required><br>
+
+        <label for="condicion_inmueble">Condición del Inmueble:</label>
+        <select id="condicion_inmueble" name="condicion_inmueble" required>
+            <option value="excellent">Excelente</option>
+            <option value="good">Bueno</option>
+            <option value="average">Deteriorado</option>
+        </select><br>
+
+        <label for="tasa_interes">Tasa de Interés:</label>
+        <input type="number" id="tasa_interes" name="tasa_interes" step="0.01" required><br>
+
+        <button type="submit">Guardar</button>
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Formulario de usuario -->
+    <form method="post" action="{{ url_for('views_bp.user_form') }}">
+        <!-- Campos del formulario -->
+    </form>
+    </form>
+</body>
+</html>

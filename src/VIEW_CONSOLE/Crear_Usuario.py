@@ -1,95 +1,110 @@
-# Lo importamos para poder incluir la ruta de busqueda python
 import sys
 sys.path.append("src")
 
-# Se importa el modulo donde se realizarán los procesos
+# Import the mortgage calculation and user control modules
+from logic.reverse_mortgage import ReverseMortgageCalculator
+from logic.input_validator import InputValidator
+from logic.exceptions import (
+    DataTypeError,
+    InvalidPropertyValueError,
+    ExcessivePropertyValueError,
+    InvalidInterestRateError,
+    InvalidPropertyConditionError,
+    InvalidMaritalStatusError,
+)
 from CONTROLLER.Controlador_Usuarios import Controlador_Usuarios
 from MODEL.Usuario import Usuario
 
+def get_user_data():
+    """Collects and validates user data for reverse mortgage calculation."""
+    # Collect general details
+    cedula = int(input("Por favor ingrese su cedula: "))
+    age = int(input("Enter the owner's age:  (62 - 84): ")) 
+    marital_status = input("Enter your marital status (married, single, divorced): ").strip().lower()
+    
+    # Conditionally get spouse details
+    spouse_age, spouse_gender = None, None
 
-def Bienvenida():
-    # Se le da una bienvenida al usuario y se le muestra un menú con las opciones
-    print("-------------------------------------------")
-    print("    BIENVENIDO AL BANCO   ")
-    print("¿Qué deseas hacer?")
-    print(" 1. Obtener una hipoteca inversa \n 0. Salir")
-    opcion = int(input("Elija una opción: "))
-    print("--------------------------------------")
-    # Se llama a la siguiente función y se le pasa como parametro la opción que el usuario eligió
-    return desiciones(opcion)
+    if marital_status == "married":
+        spouse_gender = input("Enter your spouse's gender (male, female): ").strip().lower()
+        try:
+            spouse_age = int(input("Enter the spouse's age: "))
+        except ValueError:
+            print("Invalid input for spouse's age. Please enter a valid integer.")
 
-def desiciones(opcion):
-    # Se hace uso del metodo try para lanzar una excepción si algo falla
-    try:
-        # Se usa el ciclo while para verificar cual opción escogio el usuario
-        while opcion != 0:
-            # Se verifica si la opción escogida por el usuario no está definida
-            if opcion < 0 or opcion > 1:
-                print("------------------------------------------------------------------")
-                print("                  EL BANCO            ")
-                print("La opción ingresada no es correcta, intente de nuevo")
-                print("-------------------------------------------------------------------")
-                # Se llama nuevamente al metodo de Bienvenida para reiniciar el proceso
-                Bienvenida()
-            # Se verifica si el usuario quiere calcular una hipoteca inversa
-            if opcion == 1:
-                print("---------------------------------------------------------------------")
-                print("                     EL BANCO                 ")
-                print("DATOS PERSONALES")
-                # Se obtienen los datos de entrada
-                cedula = int(input("Por favor ingrese su cedula: "))
-                edad = int(input("Por favor ingrese su edad actual-->(entre 62 y 84 años): "))
-                estado_civil = input("Por favor ingrese su estado civil-->(casado, casada): ")
-                estado_civil = estado_civil.title()
-                #Condicional para saber si el usuario tiene conyugue
-                if estado_civil == "Casado" or estado_civil == "Casada":
-                    #Si la condición anterior se cumple, se obtienen los datos del conyugue
-                    edad_conyugue = int(input("Por favor ingrese la edad de su conyugue: "))
-                    sexo_conyugue = input("Por favor ingrese el genero de su conyugue-->(hombre, mujer): ")
-                else:
-                    #Si la condición anterior no se cumple, se definen los datos del conyugue como None
-                    edad_conyugue = None
-                    sexo_conyugue = None
-                
-                valor_inmueble = float(input("Por favor ingrese el valor del inmueble-->(debe ser un valor por encima del minimo): "))
-                tasa_interes = float(input("Por favor ingrese la tasa de interés (%): "))
-                print("-------------------------------------------------------------------------")
+        
+    
+    property_value = float(input("Enter the property value (200,000,000 - 900,000,000): "))
+    property_condition = input("Enter the property condition (excellent, good, average): ")
+    interest_rate = float(input("Enter the interest rate (e.g., 0.05 for 5%): "))
 
-                #Se crea el usuario en la base de datos
-                usuario = Usuario(cedula, edad, estado_civil, edad_conyugue, sexo_conyugue,valor_inmueble, tasa_interes)
-                Controlador_Usuarios.Insertar_Usuario(usuario)
-                # Se llama nuevamente al metodo de Bienvenida para reiniciar el proceso
-                Bienvenida()
+    return cedula, age, marital_status, spouse_age, spouse_gender, property_value, property_condition, interest_rate
 
-        # Se le da al usuario un mensaje de despedida al usuario cuando finaliza todo el proceso
-        print("------------------------------------------------------------------")
-        print("                  EL BANCO            ")
-        print("Gracias por visitarnos, vuelva pronto")
-        print("-------------------------------------------------------------------")
-        return
-    # Se lanza un mensaje de error cuando algo falla
-    except ValueError:
-        print("------------------------------------------------------------------")
-        print("                  EL BANCO            ")
-        print("Hubo un ERROR, revisa que los datos ingresados sean correctos")
-        print("-------------------------------------------------------------------")
-        # Se llama nuevamente al metodo de Bienvenida para reiniciar el proceso
-        Bienvenida()
-    except Exception as exc:
-        print("------------------------------------------------------------------")
-        print("                  EL BANCO            ")
-        print(f"{exc}, intentalo nuevamente")
-        print("-------------------------------------------------------------------")
-        # Se llama nuevamente al metodo de Bienvenida para reiniciar el proceso
-        Bienvenida()
+def main():
+    print("=== BIENVENIDO AL SISTEMA DE HIPOTECA INVERSA ===\n")
 
-#Condicional para comprobar si la tabla "Usuarios" ya está creada
-if Controlador_Usuarios.Crear_Tabla == "Tabla Existente":
-    # Si la condición anterior se cumple, solo se llama la funcion para dar inicio al programa
-    Bienvenida()
-
-else:
-    #Si la condición anterior no se cumple, se crea la base de datos
     Controlador_Usuarios.Crear_Tabla()
-    # Se llama la funcion para dar inicio al programa
-    Bienvenida()
+
+    try:
+        cedula, age, marital_status, spouse_age, spouse_gender, property_value, property_condition, interest_rate = get_user_data()
+        
+        validator = InputValidator(
+            cedula=cedula,
+            age = age,
+            property_value=property_value,
+            property_condition=property_condition,
+            marital_status=marital_status,
+            spouse_age=spouse_age,
+            spouse_gender = spouse_gender,
+            interest_rate=interest_rate 
+        )
+
+        validator.validate_inputs()
+
+
+        # Save user data in the database
+        usuario = Usuario(
+            cedula=cedula,
+            edad=age,
+            estado_civil=marital_status.title(),
+            edad_conyugue=spouse_age,
+            sexo_conyugue=spouse_gender,
+            valor_inmueble=property_value,
+            condicion_inmueble = property_condition,
+            tasa_interes=interest_rate,
+        )
+        Controlador_Usuarios.Insertar_Usuario(usuario)
+        print("\nUsuario registrado exitosamente en la base de datos.")
+
+        # Calculate reverse mortgage payment
+        calculator = ReverseMortgageCalculator(
+            cedula=cedula,
+            age = age,
+            property_value=property_value,
+            property_condition=property_condition,
+            marital_status=marital_status,
+            spouse_age=spouse_age,
+            spouse_gender = spouse_gender,
+            interest_rate=interest_rate
+        )
+        monthly_payment = calculator.calculate_monthly_payment()
+        print(f"\nEl pago mensual estimado de la hipoteca inversa es: {monthly_payment}")
+
+    except (
+        DataTypeError,
+        InvalidPropertyValueError,
+        ExcessivePropertyValueError,
+        InvalidInterestRateError,
+        InvalidPropertyConditionError,
+        InvalidMaritalStatusError,
+    ) as e:
+        print(f"\nError: {str(e)}")
+
+    except ValueError as exc:
+        print(f"\nError de valor: {str(exc)}. Inténtelo de nuevo.")
+        
+    except Exception as e:
+        print(f"\nOcurrió un error inesperado: {str(e)}. Inténtelo de nuevo.")
+
+if __name__ == "__main__":
+    main()

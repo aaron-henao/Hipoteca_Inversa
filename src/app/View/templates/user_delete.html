@@ -1,0 +1,17 @@
+<h3>¿Está seguro de que desea eliminar a {{ user.nombre }}?</h3>
+
+<form method="POST" action="{{ url_for('views_bp.delete_user', cedula=user.cedula) }}">
+    <button type="submit">Eliminar Usuario</button>
+</form>
+
+<a href="{{ url_for('views_bp.search_user') }}">Volver al formulario de búsqueda</a>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}

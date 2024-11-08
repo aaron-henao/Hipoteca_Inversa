@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Detalles del Usuario</h1>
+    <table>
+        <tr>
+            <th>Cédula</th>
+            <td>{{ user['cedula'] }}</td>
+        </tr>
+        <tr>
+            <th>Edad</th>
+            <td>{{ user['edad'] }}</td>
+        </tr>
+        <tr>
+            <th>Estado Civil</th>
+            <td>{{ user['estado_civil'] }}</td>
+        </tr>
+        <tr>
+            <th>Valor Inmueble</th>
+            <td>{{ user['valor_inmueble'] }}</td>
+        </tr>
+        <tr>
+            <th>Condición Inmueble</th>
+            <td>{{ user['condicion_inmueble'] }}</td>
+        </tr>
+        <tr>
+            <th>Tasa de Interés</th>
+            <td>{{ user['tasa_interes'] }}</td>
+        </tr>
+        <tr>
+            <th>Edad Cónyuge</th>
+            <td>{{ user['edad_conyuge'] }}</td>
+        </tr>
+        <tr>
+            <th>Sexo Cónyuge</th>
+            <td>{{ user['sexo_conyuge'] }}</td>
+        </tr>
+    </table>
+    <a href="{{ url_for('views_bp.user_details') }}">Volver a buscar otro usuario</a>
+</body>
+</html>

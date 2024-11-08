@@ -19,7 +19,7 @@ class ReverseMortgageCalculator:
     LIFE_EXPECTANCY_2 = 20
     LIFE_EXPECTANCY_DEFAULT = 25
 
-    def __init__(self, property_value, property_condition, marital_status, owner_age, spouse_age=None, interest_rate=0.05):
+    def __init__(self, cedula, edad, estado_civil, valor_inmueble, condicion_inmueble, tasa_interes, edad_conyuge, sexo_conyuge):
         """
         Initialize the reverse mortgage calculator with the necessary parameters.
         
@@ -31,12 +31,14 @@ class ReverseMortgageCalculator:
             spouse_age (int, optional): The age of the spouse. Defaults to None.
             interest_rate (float): The interest rate of the mortgage. Defaults to 0.05.
         """
-        self.property_value = property_value
-        self.property_condition = property_condition
-        self.marital_status = marital_status
-        self.owner_age = owner_age
-        self.spouse_age = spouse_age
-        self.interest_rate = interest_rate
+        self.cedula = cedula
+        self.edad = edad
+        self.estado_civil = estado_civil
+        self.valor_inmueble = valor_inmueble 
+        self.condicion_inmueble = condicion_inmueble
+        self.tasa_interes = tasa_interes
+        self.edad_conyuge = edad_conyuge
+        self.sexo_conyuge = sexo_conyuge
         
         # Validate inputs
         self.validate_inputs()
@@ -54,17 +56,19 @@ class ReverseMortgageCalculator:
             InvalidMaritalStatusError: If the marital status is invalid.
         """
         validator = InputValidator(
-            self.property_value,
-            self.property_condition,
-            self.marital_status,
-            self.owner_age,
-            self.spouse_age,
-            self.interest_rate
+            self.cedula,
+            self.edad,
+            self.estado_civil,
+            self.valor_inmueble, 
+            self.condicion_inmueble,
+            self.tasa_interes,
+            self.edad_conyuge,
+            self.sexo_conyuge,
         )
         
         validator.validate_inputs()
 
-    def get_life_expectancy(self, age):
+    def get_life_expectancy(self, edad):
         """
         Return life expectancy based on age.
         
@@ -74,9 +78,9 @@ class ReverseMortgageCalculator:
         Returns:
             int: Estimated life expectancy in years.
         """
-        if age >= self.AGE_THRESHOLD_1:
+        if edad >= self.AGE_THRESHOLD_1:
             return self.LIFE_EXPECTANCY_1
-        elif age >= self.AGE_THRESHOLD_2:
+        elif edad >= self.AGE_THRESHOLD_2:
             return self.LIFE_EXPECTANCY_2
         else:
             return self.LIFE_EXPECTANCY_DEFAULT
@@ -90,13 +94,13 @@ class ReverseMortgageCalculator:
         """
         # Adjust property value based on condition
         condition_adjustment = {"excellent": 1, "good": 0.9, "average": 0.8}
-        adjusted_value = self.property_value * condition_adjustment[self.property_condition]
+        adjusted_value = self.valor_inmueble * condition_adjustment[self.condicion_inmueble]
 
         # Calculate life expectancy
-        if self.spouse_age is not None:
-            youngest_age = min(self.owner_age, self.spouse_age)
+        if self.edad_conyuge is not None:
+            youngest_age = min(self.edad, self.edad_conyuge)
         else:
-            youngest_age = self.owner_age
+            youngest_age = self.edad
 
         life_expectancy_years = self.get_life_expectancy(youngest_age)
         life_expectancy_months = life_expectancy_years * 12
@@ -104,7 +108,7 @@ class ReverseMortgageCalculator:
         # Calculate mortgage payment
         loan_percentage = 0.50 #This value depends on the entity, this value is determined by the entity, the entity can change the value, so it can increase or go up.
         mortgage_amount = adjusted_value * loan_percentage
-        monthly_interest_rate = (1 + self.interest_rate) ** (1/12) - 1
+        monthly_interest_rate = (1 + self.tasa_interes) ** (1/12) - 1
         monthly_payment = mortgage_amount * monthly_interest_rate / (1 - (1 + monthly_interest_rate) ** -life_expectancy_months)
 
         total_payment = monthly_payment * life_expectancy_months

@@ -12,51 +12,67 @@ MIN_INTEREST_RATE = 0
 MAX_INTEREST_RATE = 1
 
 class InputValidator:
-    def __init__(self, property_value, property_condition, marital_status, owner_age, spouse_age, interest_rate):
-        self.property_value = property_value
-        self.property_condition = property_condition
-        self.marital_status = marital_status
-        self.owner_age = owner_age
-        self.spouse_age = spouse_age
-        self.interest_rate = interest_rate
+    def __init__(self, cedula, edad, estado_civil, edad_conyuge, sexo_conyuge, valor_inmueble, condicion_inmueble, tasa_interes):
+        self.cedula = cedula
+        self.edad = edad
+        self.estado_civil = estado_civil
+        self.valor_inmueble = valor_inmueble
+        self.condicion_inmueble = condicion_inmueble
+        self.tasa_interes = tasa_interes
+        self.edad_conyuge= edad_conyuge
+        self.sexo_conyugue= sexo_conyuge 
 
     def validate_inputs(self):
-        if not isinstance(self.property_value, (int, float)):
-            raise DataTypeError(f"Property value must be a number. You entered: {self.property_value}.")
+        try:
+            assert isinstance(self.cedula, int), "Cédula debe ser un número entero"
+            assert isinstance(self.edad, int) and self.edad > 0, "Edad debe ser un número positivo"
+            assert self.estado_civil in ["single", "married", "divorced"], "Estado civil no válido"
+            if self.estado_civil == "married":
+                assert self.edad_conyuge is not None, "Edad del cónyuge es requerida si está casado"
+                assert isinstance(self.edad_conyuge, int) and self.edad_conyuge > 0, "Edad del cónyuge debe ser un número positivo"
+            assert isinstance(self.valor_inmueble, (int, float)) and self.valor_inmueble > 0, "Valor del inmueble debe ser un número positivo"
+            assert isinstance(self.tasa_interes, (int, float)) and self.tasa_interes > 0, "Tasa de interés debe ser un número positivo"
+            assert isinstance(self.condicion_inmueble, str), "Condición del inmueble debe ser un texto"
+            
+        except AssertionError as e:
+            raise ValueError(f"Error en la validación: {str(e)}")
         
-        if not isinstance(self.owner_age, int) or (self.spouse_age is not None and not isinstance(self.spouse_age, int)):
-            raise DataTypeError(f"Owner age must be an integer. You entered: owner age = {self.owner_age}, spouse age = {self.spouse_age}.")
+        if not isinstance(self.valor_inmueble, float):
+            raise DataTypeError(f"Property value must be a number. You entered: {self.valor_inmueble}.")
         
-        if not isinstance(self.interest_rate, (int, float)):
-            raise DataTypeError(f"Interest rate must be a number. You entered: {self.interest_rate}.")
+        if not isinstance(self.edad, int) or (self.edad_conyuge is not None and not isinstance(self.edad_conyuge, int)):
+            raise DataTypeError(f"Owner age must be an integer. You entered: owner age = {self.edad}, spouse age = {self.edad_conyuge}.")
         
-        if self.property_value <= 0:
-            raise InvalidPropertyValueError(f"Property value must be a positive number. You entered: {self.property_value}.")
+        if not isinstance(self.tasa_interes, (int, float)):
+            raise DataTypeError(f"Interest rate must be a number. You entered: {self.tasa_interes}.")
         
-        if not (MIN_PROPERTY_VALUE <= self.property_value <= MAX_PROPERTY_VALUE):
-            raise ExcessivePropertyValueError(f"Property value must be between {MIN_PROPERTY_VALUE} and {MAX_PROPERTY_VALUE}. You entered: {self.property_value}.")
+        if self.valor_inmueble <= 0:
+            raise InvalidPropertyValueError(f"Property value must be a positive number. You entered: {self.valor_inmueble}.")
         
-        if self.spouse_age is not None:
-            min_age = min(self.owner_age, self.spouse_age)
+        if not (MIN_PROPERTY_VALUE <= self.valor_inmueble <= MAX_PROPERTY_VALUE):
+            raise ExcessivePropertyValueError(f"Property value must be between {MIN_PROPERTY_VALUE} and {MAX_PROPERTY_VALUE}. You entered: {self.valor_inmueble}.")
+        
+        if self.edad_conyuge is not None:
+            min_age = min(self.edad, self.edad_conyuge)
             if min_age > MAX_AGE:
                 raise InvalidPropertyValueError(f"Owner and spouse age must not exceed {MAX_AGE}.")
             
-            if self.owner_age < MIN_AGE_LIMIT or self.spouse_age < MIN_AGE_LIMIT:
-                raise InvalidPropertyValueError(f"Owner and spouse must be at least {MIN_AGE_LIMIT} years old. You entered: owner age = {self.owner_age}, spouse age = {self.spouse_age}.")
+            if self.edad < MIN_AGE_LIMIT or self.edad_conyuge < MIN_AGE_LIMIT:
+                raise InvalidPropertyValueError(f"Owner and spouse must be at least {MIN_AGE_LIMIT} years old. You entered: owner age = {self.edad}, spouse age = {self.edad_conyuge}.")
         else:
-            if self.owner_age > MAX_AGE:
+            if self.edad > MAX_AGE:
                 raise InvalidPropertyValueError(f"Owner age must not exceed {MAX_AGE}.")
-            if self.owner_age < MIN_AGE_LIMIT:
-                raise InvalidPropertyValueError(f"Owner must be at least {MIN_AGE_LIMIT} years old. You entered: owner age = {self.owner_age}.")
+            if self.edad < MIN_AGE_LIMIT:
+                raise InvalidPropertyValueError(f"Owner must be at least {MIN_AGE_LIMIT} years old. You entered: owner age = {self.edad}.")
         
-        if not (MIN_INTEREST_RATE < self.interest_rate <= MAX_INTEREST_RATE):
-            raise InvalidInterestRateError(f"Interest rate must be between {MIN_INTEREST_RATE} and {MAX_INTEREST_RATE}. You entered: {self.interest_rate}.")
+        if not (MIN_INTEREST_RATE < self.tasa_interes <= MAX_INTEREST_RATE):
+            raise InvalidInterestRateError(f"Interest rate must be between {MIN_INTEREST_RATE} and {MAX_INTEREST_RATE}. You entered: {self.tasa_interes}.")
         
         valid_conditions = ["excellent", "good", "average"]
-        if self.property_condition not in valid_conditions:
-            raise InvalidPropertyConditionError(f"Invalid property condition: '{self.property_condition}'. Must be one of {', '.join(valid_conditions)}.")
+        if self.condicion_inmueble not in valid_conditions:
+            raise InvalidPropertyConditionError(f"Invalid property condition: '{self.condicion_inmueble}'. Must be one of {', '.join(valid_conditions)}.")
         
         valid_marital_statuses = ["married", "single", "divorced"]
-        if self.marital_status not in valid_marital_statuses:
-            raise InvalidMaritalStatusError(f"Invalid marital status: '{self.marital_status}'. Must be one of {', '.join(valid_marital_statuses)}.")
+        if self.estado_civil not in valid_marital_statuses:
+            raise InvalidMaritalStatusError(f"Invalid marital status: '{self.estado_civil}'. Must be one of {', '.join(valid_marital_statuses)}.")
 

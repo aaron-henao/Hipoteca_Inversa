@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Actualizar Datos del Usuario</h1>
+    <form action="{{ url_for('views_bp.update_user') }}" method="POST">
+        <label for="cedula">Cédula:</label>
+        <input type="text" id="cedula" name="cedula" required><br>
+
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" name="edad" required><br>
+
+        <label for="estado_civil">Estado Civil:</label>
+        <input type="text" id="estado_civil" name="estado_civil" required><br>
+
+        <label for="edad_conyuge">Edad del Conyuge:</label>
+        <input type="number" id="edad_conyuge" name="edad_conyuge"><br>
+
+        <label for="sexo_conyuge">Sexo del Conyuge:</label>
+        <input type="text" id="sexo_conyuge" name="sexo_conyuge"><br>
+
+        <label for="valor_inmueble">Valor Inmueble:</label>
+        <input type="number" step="0.01" id="valor_inmueble" name="valor_inmueble" required><br>
+
+        <label for="condicion_inmueble">Condición Inmueble:</label>
+        <input type="text" id="condicion_inmueble" name="condicion_inmueble" required><br>
+
+        <label for="tasa_interes">Tasa de Interés:</label>
+        <input type="number" step="0.01" id="tasa_interes" name="tasa_interes" required><br>
+
+        <button type="submit">Actualizar Usuario</button>
+    </form>
+</body>
+</html>

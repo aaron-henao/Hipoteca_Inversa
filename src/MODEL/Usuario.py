@@ -6,13 +6,14 @@ class Usuario:
     Representa a un usuario de la Hipoteca Inversa en la aplicación
 
     """
-    def __init__(self, cedula, edad, estado_civil, edad_conyugue, sexo_conyugue, valor_inmueble, tasa_interes):
+    def __init__(self, cedula, edad, estado_civil, edad_conyugue, sexo_conyugue, valor_inmueble, condicion_inmueble, tasa_interes):
         self.cedula = cedula
         self.edad = edad
         self.estado_civil = estado_civil
         self.edad_conyugue = edad_conyugue
         self.sexo_conyugue = sexo_conyugue
         self.valor_inmueble = valor_inmueble
+        self.condicion_inmueble = condicion_inmueble
         self.tasa_interes = tasa_interes
 
     def __repr__(self):
@@ -22,7 +23,7 @@ class Usuario:
 
         """
         #Condicional para saber si el usuario tiene conyugue
-        if (self.estado_civil.title() == "Casado" or self.estado_civil.title() == "Casada"):    
+        if (self.estado_civil.title() == "Married"):    
             #Si la condición anterior se cumple, retorna todos los datos del usuario
             return str(f"CEDULA: {self.cedula} \n EDAD: {self.edad} \n ESTADO CIVIL: {self.estado_civil} \n EDAD CONYUGUE: {self.edad_conyugue} \n SEXO CONYUGUE: {self.sexo_conyugue} ")
 
@@ -43,3 +44,4 @@ class Usuario:
         assert(self.sexo_conyugue == comparar_con.sexo_conyugue)
         assert(self.valor_inmueble == comparar_con.valor_inmueble)
         assert(self.tasa_interes == comparar_con.tasa_interes)
+        assert(self.condicion_inmueble == comparar_con.condicion_inmueble)
